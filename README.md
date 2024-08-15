@@ -1,0 +1,1 @@
+# burridge_knopoff_model_sandpile_mapping
