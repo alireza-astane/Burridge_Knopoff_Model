@@ -7,6 +7,8 @@ import json
 from multiprocessing import Process
 
 
+# np.bool = np.bool_
+
 L = 50
 u = 0.0001
 k1 = 1
@@ -170,10 +172,10 @@ def getData():
 
     TsData= np.empty((0,50))
     eventsSizes = np.empty((0))
-    eventsBlocks = np.empty((0,50)).astype(np.int64)
+    eventsBlocks = np.empty((0)).astype(np.int64)
 
-    for i in range(10):
-        x,v,t,eventsSize,eventsBlocks,eventsBlocks2,tenstionData,ends = run(x,v,t,100_000,L,alpha)
+    for i in range(2000):
+        x,v,t,eventsSize,eventsBlock,eventsBlocks2,tenstionData,ends = run(x,v,t,1_000_000,L,alpha)
 
 
         Ts = tenstionData[ends][np.argwhere(eventsBlocks2[:] >= 500)[:,0]]
@@ -181,7 +183,7 @@ def getData():
 
 
         eventsSizes = np.concatenate((eventsSizes,eventsSize))
-        eventsBlocks = np.concatenate((eventsBlocks,eventsBlock))
+        eventsBlocks = np.concatenate((eventsBlocks,eventsBlock[:,0]))
 
         print(i)
 
@@ -190,9 +192,9 @@ def getData():
 
 def function():
     eventsSizes, eventsBlocks,TsData = getData()
-    np.save(f"TsDataAlpha={alpha},L={L}",TsData)
-    np.save(f"EventsSizesAlpha={alpha},L={L}",eventsSizes)
-    np.save(f"eventsBlocksAlpha={alpha},L={L}",eventsBlocks)
+    np.save(f"TsDataAlpha={alpha},L={L}"+str(datetime.datetime.now()),TsData)
+    np.save(f"EventsSizesAlpha={alpha},L={L}"+str(datetime.datetime.now()),eventsSizes)
+    np.save(f"eventsBlocksAlpha={alpha},L={L}"+str(datetime.datetime.now()),eventsBlocks)
     print("completed")
 
 
@@ -205,10 +207,6 @@ if __name__ =="__main__":
     t5 = Process(target=function,args=())
     t6 = Process(target=function,args=())
     t7 = Process(target=function,args=())
-    t8 = Process(target=function,args=())
-    t9 = Process(target=function,args=())
-    t10 = Process(target=function,args=())
-    t11 = Process(target=function,args=())
     
     t0.start()
     t1.start()
@@ -218,10 +216,7 @@ if __name__ =="__main__":
     t5.start()
     t6.start()
     t7.start()
-    t8.start()
-    t9.start()
-    t10.start()
-    t11.start()
+
 
     t0.join()
     t1.join()
@@ -231,8 +226,5 @@ if __name__ =="__main__":
     t5.join()
     t6.join()
     t7.join()
-    t8.join()
-    t9.join()
-    t10.join()
-    t11.join()
+
 
