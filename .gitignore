@@ -225,3 +225,14 @@ pov/*
 
 /space/*
 /space/
+
+
+*.npy
+*.png 
+*.jld2 
+*.json 
+
+/*.npy
+/*.png 
+/*.jld2 
+/*.json
