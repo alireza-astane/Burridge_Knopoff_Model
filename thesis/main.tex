@@ -1,0 +1,96 @@
+\documentclass[11pt,a4paper,twoside,openright,parskip=half-,headings=optiontoheadandtoc]{scrreprt}
+
+% ---------------------------------------------------------------- fonts & layout
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm}
+\usepackage{newpxtext}
+\usepackage[varbb]{newpxmath}
+\usepackage[scaled=0.86]{inconsolata}
+\usepackage{microtype}
+\usepackage[a4paper,inner=28mm,outer=30mm,top=28mm,bottom=32mm]{geometry}
+\usepackage[headsepline]{scrlayer-scrpage}
+\pagestyle{scrheadings}
+\clearpairofpagestyles
+\ohead{\pagemark}
+\ihead{\headmark}
+\automark[section]{chapter}
+\setkomafont{disposition}{\normalfont\bfseries}
+\setkomafont{chapter}{\normalfont\bfseries\huge}
+\setkomafont{pageheadfoot}{\normalfont\small\scshape}
+
+% ---------------------------------------------------------------- maths
+\usepackage{mathtools,bm}
+\usepackage{siunitx}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\avg}[1]{\left\langle #1 \right\rangle}
+\newcommand{\code}[1]{\texttt{#1}}
+\newtheorem{theorem}{Theorem}[chapter]
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+% ---------------------------------------------------------------- graphics, tables, colours
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\definecolor{ink}{HTML}{0B0B0B}
+\definecolor{ink2}{HTML}{52514E}
+\definecolor{cblue}{HTML}{2A78D6}
+\definecolor{cblueD}{HTML}{104281}
+\definecolor{corange}{HTML}{EB6834}
+\definecolor{caqua}{HTML}{1BAF7A}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,decorations.pathmorphing,patterns}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,format=plain}
+
+% ---------------------------------------------------------------- references
+\usepackage[backend=biber,style=phys,biblabel=brackets,articletitle=true,pageranges=false,
+  eprint=false,doi=false,isbn=false,url=false]{biblatex}
+\addbibresource{refs.bib}
+\usepackage[colorlinks=true,linkcolor=cblueD,citecolor=cblueD,urlcolor=cblueD]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+\crefname{example}{Example}{Examples}
+
+\begin{document}
+
+% ---------------------------------------------------------------- title
+\begin{titlepage}
+\centering
+\vspace*{30mm}
+{\Huge\bfseries Self-Organized Criticality in a\\[2mm] One-Dimensional Earthquake Fault Model\par}
+\vspace{8mm}
+{\Large Mapping the Burridge--Knopoff model onto a sandpile model\par}
+\vspace{20mm}
+{\large Alireza Pourhassan Astane\par}
+\vspace{4mm}
+{\normalsize Supervisor: Dr.\ Saman Moghimi Araghi\par}
+{\normalsize Department of Physics, Sharif University of Technology\par}
+\vfill
+{\small Draft --- \today\par}
+\end{titlepage}
+
+\pagenumbering{roman}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\emph{(To be written when the results are complete.)}
+
+\tableofcontents
+
+\input{chapters/symbols}
+
+\cleardoublepage
+\pagenumbering{arabic}
+\include{chapters/ch1_introduction}
+\include{chapters/ch2_soc}
+\include{chapters/ch3_measuring}
+\include{chapters/ch4_bk}
+\include{chapters/ch5_mapping}
+\include{chapters/ch6_numerics}
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

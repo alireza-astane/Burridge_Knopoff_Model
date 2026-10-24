@@ -1,0 +1,90 @@
+\chapter*{List of symbols}
+\addcontentsline{toc}{chapter}{List of symbols}
+
+Symbols are listed in the order in which they first appear. Where the same letter is
+used in the literature for two different things, the table says which meaning is used here.
+
+\subsection*{Earthquakes (Chapter 1)}
+\begin{longtable}{@{}p{22mm}p{120mm}@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$\mu_{\mathrm s}$ & shear modulus (rigidity) of rock, about $3\times10^{10}$\,Pa \\
+$A$ & area of the fault surface that slipped in an earthquake (m$^2$) \\
+$\bar D$ & average slip, i.e.\ relative displacement of the two sides of the fault (m) \\
+$M_0$ & seismic moment, $M_0=\mu_{\mathrm s} A\bar D$ (N\,m); the physical size of an earthquake \\
+$M_w$ & moment magnitude, $M_w=\tfrac23(\log_{10}M_0-9.1)$; a dimensionless logarithmic size \\
+$N(\geq M_w)$ & number of earthquakes (per year, in a region) with magnitude at least $M_w$ \\
+$a$ & Gutenberg--Richter $a$-value: $\log_{10}$ of the number of events with $M_w\ge 0$; measures overall activity \\
+$b$ & Gutenberg--Richter $b$-value: slope of $\log_{10}N$ against $M_w$; measures how fast the number of events falls with size \\
+$\tau$ & exponent of a power-law probability density, $P(x)\propto x^{-\tau}$ \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Probability and critical phenomena (Chapter 2)}
+\begin{longtable}{@{}p{22mm}p{120mm}@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$P(x)$ & probability density (or, for integer $x$, probability) of a random quantity $x$ \\
+$\bar F(x)$ & complementary cumulative distribution, the probability that the quantity is $\ge x$ \\
+$\avg{x^q}$ & $q$-th moment, the average of $x^q$ \\
+$x_{\min}$, $x_c$ & lower and upper cutoffs of a power law \\
+$p$, $p_c$ & occupation probability in percolation and its critical value \\
+$n_s$ & number of percolation clusters of $s$ sites, per lattice site \\
+$\xi$ & correlation length: the largest distance over which the system is correlated \\
+$\nu$, $\gamma$ & critical exponents of $\xi$ and of the mean cluster size \\
+$D$ & fractal dimension: the size of an object of linear extent $R$ grows as $R^{D}$ \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Sandpile models (Chapter 2)}
+\begin{longtable}{@{}p{22mm}p{120mm}@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$L$ & linear size of the lattice (number of sites along one side) \\
+$N$ & number of sites, $N=L^d$ in $d$ dimensions \\
+$k$ & number of neighbours of a site in the bulk ($k=2$ on a chain, $4$ on the square lattice) \\
+$z_i$ & height (number of grains) at site $i$ \\
+$z_c$ & critical height; a site with $z_i\ge z_c$ is unstable. In this thesis $z_c=k$ \\
+$s$ & avalanche size: total number of topplings caused by one added grain \\
+$a$ & avalanche area: number of distinct sites that toppled (not to be confused with the GR $a$-value) \\
+$T$ & avalanche duration: number of parallel update steps \\
+$\Delta$ & toppling matrix ($N\times N$) \\
+$G$ & Green function, $G=\Delta^{-1}$ \\
+$n_{ij}$ & number of topplings at site $i$ caused by a grain added at site $j$ \\
+$g_j$ & $\sum_i G_{ij}$, the mean avalanche size for a grain added at $j$ \\
+$l$, $l'$ & position of the empty site in the 1D chain before and after an avalanche ($0$ means ``no empty site'') \\
+$\sigma(q)$ & moment exponent, defined by $\avg{s^q}\propto L^{\sigma(q)}$ \\
+\bottomrule
+\end{longtable}
+
+\subsection*{The Burridge--Knopoff model (Chapter 4)}
+\begin{longtable}{@{}p{22mm}p{120mm}@{}}
+\toprule
+Symbol & Meaning \\
+\midrule
+$m$ & mass of a block \\
+$k_c$, $k_p$ & spring constants of the coupling springs (between blocks) and of the pulling springs (to the plate) \\
+$F_0$ & maximum static friction force \\
+$v$, $v_1$ & velocity of the plate; velocity over which kinetic friction weakens \\
+$X_j$, $U_j$ & displacement of block $j$; the same in units of $D_0$ \\
+$\omega_p$, $\tau$ & $\sqrt{k_p/m}$; dimensionless time $\omega_pt$ \\
+$D_0$ & $F_0/k_p$, the stretch of a pulling spring at the friction threshold \\
+$\ell$ & stiffness ratio, $\ell^2=k_c/k_p$ \\
+$\nu$ & dimensionless loading speed $v/(\omega_pD_0)$ \\
+$\alpha$ & rate of velocity weakening, $2\alpha=\omega_pD_0/v_1$ \\
+$\sigma$ & drop of friction at the onset of slip (1991 law) \\
+$\phi(y)$ & dimensionless friction as a function of the sliding velocity $y$ in units of $v_1$ \\
+$a$ & spacing between neighbouring blocks (not the avalanche area of Chapter 2) \\
+$\xi$ & stiffness length $\ell a$; also the sound speed in units of length per unit $\tau$ \\
+$\omega_1$ & $\sqrt{2\ell^2+1}$, frequency of one block slipping in a stuck chain \\
+$\epsilon$ & fraction of the released force lost into the pulling spring, $1/(2\ell^2+1)$ \\
+$\tilde\xi$, $\tilde M$ & localization length and the corresponding crossover moment \\
+$M$, $\mu$ & moment of an event, $a\sum_j\delta U_j$, and its magnitude $\ln M$ \\
+$\mathcal R(\mu)$, $\mathcal D(\mu)$ & number of events per unit length and per unit time (per unit plate displacement) \\
+$b$, $b'$ & slopes of $\ln\mathcal D$ against $\mu$ for localized and delocalized events \\
+$M_1$, $M^*$ & moment of a one-block event; upper cutoff of the delocalized events \\
+\bottomrule
+\end{longtable}
