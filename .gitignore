@@ -236,3 +236,6 @@ pov/*
 /*.png 
 /*.jld2 
 /*.json
+
+
+/Sandpile_Backup
