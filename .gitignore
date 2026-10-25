@@ -36,3 +36,6 @@ thesis/build.log
 .vscode/
 .idea/
 .DS_Store
+
+# Reference papers (copyrighted; keep local copies only, see papers/README.md)
+papers/*.pdf

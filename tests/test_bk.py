@@ -253,3 +253,167 @@ def test_single_block_1989_law_matches_direct_integration():
     slip = sol.y_events[0][0][0]
     assert r["moment"][1] == pytest.approx(slip, rel=1e-3)
     assert r["moment"][2] == pytest.approx(slip, rel=1e-3)
+
+
+# ------------------------------------------------------------------ 1989 law: multi-block events
+
+def reference_event_1989(U, P, l, alpha, nu, tol=1e-11):
+    """One event with the symmetric 1989 friction law and a moving plate, exact event location.
+
+    Stuck blocks start slipping forward at f = 1 or backward at f = -1. Each slipping block has a
+    direction of motion; when its velocity crosses zero against that direction it sticks if |f| <= 1,
+    and otherwise reverses direction and keeps slipping.
+    """
+    U = U.astype(float).copy()
+    N, l2 = U.size, l * l
+    V = np.zeros(N)
+    j0 = int(np.argmax(forces(U, P, l2)))
+    S = {j0: 1.0}                                   # slipping block -> direction of motion
+    t = 0.0
+    while S:
+        idx, stuck = sorted(S), [j for j in range(N) if j not in S]
+        dirs = dict(S)
+        t0 = t
+
+        def rhs(tt, y):
+            u, v = y[:N], y[N:]
+            ff = forces(u, P + nu * (tt - t0), l2)
+            du, dv = np.zeros(N), np.zeros(N)
+            for j in idx:
+                du[j] = v[j]
+                vv = v[j] if v[j] * dirs[j] > 0 else 0.0      # friction acts against the motion
+                fr = dirs[j] / (1 + abs(2 * alpha * vv))
+                dv[j] = ff[j] - fr
+            return np.concatenate([du, dv])
+
+        evs = []
+        for j in idx:
+            ev = (lambda tt, y, j=j: y[N + j])
+            ev.terminal, ev.direction = True, -dirs[j]       # velocity crosses zero against the motion
+            evs.append(ev)
+        for j in stuck:
+            for thr, dirn in ((1.0, 1), (-1.0, -1)):
+                ev = (lambda tt, y, j=j, thr=thr: forces(y[:N], P + nu * (tt - t0), l2)[j] - thr)
+                ev.terminal, ev.direction = True, dirn
+                evs.append(ev)
+        sol = solve_ivp(rhs, (t0, t0 + 1e4), np.concatenate([U, V]), events=evs, rtol=tol, atol=tol,
+                        method="DOP853")
+        U, V = sol.y[:N, -1].copy(), sol.y[N:, -1].copy()
+        t = sol.t[-1]
+        P_now = P + nu * (t - t0)
+        k = [i for i, te in enumerate(sol.t_events) if len(te)][0]
+        if k < len(idx):
+            j = idx[k]
+            V[j] = 0.0
+            fj = forces(U, P_now, l2)[j]
+            if abs(fj) <= 1.0:
+                del S[j]
+            else:
+                S[j] = float(np.sign(fj))
+        else:
+            q = k - len(idx)
+            S[stuck[q // 2]] = 1.0 if q % 2 == 0 else -1.0
+        P = P_now
+    return U, P
+
+
+@pytest.mark.parametrize("seed,spread", [(0, 0.003), (1, 0.003), (2, 0.01)])
+def test_1989_event_matches_reference_solver(seed, spread):
+    rng = np.random.default_rng(seed)
+    l, alpha, nu = 3.0, 2.5, 0.05
+    U, P = chain_at_threshold(8, l, rng, spread)
+    U_ref, P_ref = reference_event_1989(U, P, l, alpha, nu)
+    c = BKChain(8, l, alpha, 0.0, nu=nu, law=LAW_1989, U=U.copy(), h=5e-5)
+    c.state[0] = P - 1e-13
+    r = c.run(1)
+    while c.n_slipping > 0:              # the burst may consist of several consecutive events
+        c.run(1)
+    assert r["blocks"][0] > 1
+    assert np.max(np.abs(c.U - U_ref)) < 1e-4 * max(1.0, np.max(np.abs(U_ref - U)))
+    # the end of the event is set by the last block creeping to a stop at |f| ~ 1, a slow process whose
+    # timing (not position) converges only linearly in h
+    assert c.P == pytest.approx(P_ref, abs=5e-3)
+
+
+# ------------------------------------------------------------------ events as space-time clusters
+
+def _open_slip(c):
+    """Slip already accumulated by events that are still in progress."""
+    total = 0.0
+    for slot in range(c.N):
+        if c.ev["serial"][slot] > 0:
+            total += c.ev["M"][slot]
+    total += np.sum((c.U - c.U0)[c.slipping])
+    return total
+
+
+@pytest.mark.parametrize("law,sigma", [(LAW_1989, 0.0), (LAW_1991, 0.01)])
+def test_every_slip_belongs_to_an_event_with_moving_plate(law, sigma):
+    c = BKChain(100, 10.0, 2.5, sigma, nu=0.01, law=law, seed=2)
+    c.run(2000)
+    Ubar0, open0 = c.U.mean(), _open_slip(c)
+    r = c.run(5000)
+    assert r["moment"].sum() + _open_slip(c) - open0 == pytest.approx(c.N * (c.U.mean() - Ubar0), rel=1e-9)
+
+
+def test_separate_regions_give_separate_events():
+    """Two blocks far apart reach the threshold at the same time: two events, not one."""
+    N, l = 60, 3.0
+    U = np.zeros(N)
+    U[10] = U[50] = -0.5                      # two equally loaded, well separated blocks
+    c = BKChain(N, l, 2.0, 0.05, nu=0.0, U=U, h=1e-3)
+    r = c.run(2)
+    assert len(r["moment"]) == 2
+    assert sorted(r["epicenter"].tolist()) == [10, 50]
+    assert np.allclose(r["moment"], r["moment"][0])
+
+
+def test_block_counts_never_exceed_chain_length_with_moving_plate():
+    c = BKChain(100, 10.0, 4.0, 0.0, nu=0.01, law=LAW_1989, seed=1)
+    c.run(1000)
+    r = c.run(5000)
+    assert r["blocks"].max() <= c.N
+    assert np.all(r["blocks"] >= 1)
+
+
+def test_1989_creeping_block_stops_after_first_oscillation():
+    """A block reaching threshold under slow loading (1989 law): compare with the exact single-block ODE.
+
+    The block creeps with an oscillating velocity; its first slip episode ends when the velocity first
+    returns to zero, after a slip of order 2 pi nu / omega_1^3 (Carlson & Langer 1989, Eq. 4.8).
+    """
+    l, alpha, nu = 10.0, 2.5, 0.01
+    w2 = 2 * l * l + 1
+    U = np.zeros(21)
+    U[10] = -0.002
+    c = BKChain(21, l, alpha, 0.0, nu=nu, law=LAW_1989, U=U, h=1e-4)
+    r = c.run(1)
+
+    def rhs(t, y):
+        v = y[1]
+        fr = 1 / (1 + 2 * alpha * v) if v > 0 else 1.0
+        return [v, 1 + nu * t - w2 * y[0] - fr]
+    ev = lambda t, y: y[1] if t > 1e-3 else 1.0
+    ev.terminal, ev.direction = True, -1
+    s = solve_ivp(rhs, (0, 5), [0, 0], events=ev, rtol=1e-11, atol=1e-16, method="LSODA", max_step=1e-3)
+    assert r["blocks"][0] == 1
+    assert r["moment"][0] == pytest.approx(s.y_events[0][0][0], rel=2e-3)
+    assert r["duration"][0] == pytest.approx(s.t_events[0][0], abs=2e-3)
+
+
+def test_no_event_is_left_open_when_nothing_slips():
+    """Every event whose blocks have all stopped must have been recorded (1989 law, moving plate)."""
+    c = BKChain(100, 10.0, 2.5, 0.0, nu=0.01, law=LAW_1989, seed=1)
+    for _ in range(40):
+        c.run(5000)
+        open_slots = [s for s in range(c.N) if c.ev["serial"][s] > 0]
+        slipping_slots = {int(c.evslot[j]) for j in np.nonzero(c.slipping)[0]}
+        assert set(open_slots) <= slipping_slots
+
+
+def test_sum_rule_with_moving_plate():
+    c = BKChain(100, 10.0, 2.5, 0.0, nu=0.01, law=LAW_1989, seed=3)
+    c.run(50_000)
+    P0 = c.P
+    r = c.run(300_000)
+    assert r["moment"].sum() / c.N == pytest.approx(c.P - P0, rel=2e-3)

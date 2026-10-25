@@ -32,7 +32,7 @@ module & content \\
 \end{center}
 Each figure of this thesis is produced by a script in \code{scripts/thesis/}, which runs the simulations, stores the raw results
 together with a file of parameters and random seeds, and draws the figure; the numbers quoted in the text are written by the same
-scripts. The test suite, \code{tests/}, contains 71 tests and runs in about half a minute. A single simulation always runs on one
+scripts. The test suite, \code{tests/}, contains 81 tests and runs in about a minute and a half. A single simulation always runs on one
 processor core; independent runs (different parameters or seeds) are distributed over the cores of the machine. This is far more
 efficient than parallelising one run, because the dynamics of an avalanche or an event is inherently sequential.
 
@@ -85,9 +85,16 @@ The program treats stuck and slipping blocks separately.
   \item \textbf{Starting.} After each step the program checks whether a stuck block has reached the threshold. If so, the moment of crossing is
     found by linear interpolation of its force between the beginning and the end of the step, and the block starts with the velocity and
     displacement it would have gained since that moment. This correction is what makes the method second-order accurate (see below).
-  \item \textbf{End of the event.} When no block is slipping, the event is over. The program records its moment, the number of blocks that slipped,
-    its duration, its epicentre, the plate position, and the energy dissipated by friction.
+  \item \textbf{Events.} An event is a cluster of slip that is connected in space and time. A block that starts to slip while one of its neighbours is
+    slipping (or stopped in the same time step) joins that neighbour's event; otherwise it starts a new event, and two events that come into contact
+    are merged. An event is over when its last block sticks. The program then records its moment, the number of distinct blocks that slipped, its
+    duration, its epicentre, the plate position, and the energy dissipated by friction. For $\nu = 0$ the plate is frozen while blocks slip, so only
+    one event can exist at a time and this definition reduces to ``everything between two loadings of the plate''. For $\nu>0$ several events can
+    coexist in different parts of the chain, as in the simulations of Carlson and Langer (1989).
 \end{enumerate}
+With the 1989 friction law, a block whose velocity returns to zero while its force is still outside the static range simply starts again; following
+Carlson and Langer, each such return of the velocity to zero ends one slip episode, so that the periodic small slips of a slowly creeping block are
+counted as separate one-block events.
 To find the block closest to the threshold without scanning all $N$ blocks, the forces of the stuck blocks are kept in a \emph{segment tree}, a
 binary tree in which every node stores the largest value below it. Updating one force and finding the largest one both take a time proportional to
 $\log N$. With these choices a chain of 4096 blocks runs at about $4\times10^4$ events per second; one unit of plate displacement takes between
@@ -129,8 +136,15 @@ position stays within a bounded distance of the plate, as the sum rule requires.
 is mirrored, and shifting all blocks and the plate by the same amount leaves the events unchanged. (In the last test only the first events are compared: the model is
 chaotic, and differences of the order of the rounding error, $10^{-15}$, eventually grow to visible size.)
 
-\paragraph{The 1989 friction law.} For a single block with symmetric friction and a moving plate, the slip of each stick--slip cycle agrees with a direct integration to
-$10^{-3}$.
+\paragraph{The 1989 friction law.} The reference solver was extended to the symmetric friction law, with backward slip and a moving plate. Whole cascades in
+chains of eight blocks agree with it to $10^{-4}$ in the final positions. A block that reaches the threshold in a slowly loaded chain creeps with an
+oscillating velocity; its first slip episode, of size about $2\pi\nu/\omega_1^3$, agrees with the exact single-block solution to $2\times10^{-3}$. This last
+test exposed an error in an intermediate version of the program: within a Runge--Kutta step, a stage velocity slightly below zero made the symmetric friction
+change sign and gave the block a spurious kick, so that creeping blocks ``bounced'' instead of stopping. Friction is now always evaluated against the current
+direction of motion. Further tests check that every slip is assigned to an event (the moments of completed and unfinished events add up to the total slip
+exactly), that no event is left unrecorded once all its blocks have stopped, that the number of blocks in an event never exceeds $N$, and that two blocks
+reaching the threshold at the same time far apart produce two separate events. For a single block, the slip of each stick--slip cycle agrees with a direct
+integration to $10^{-3}$.
 
 \paragraph{Statistical convergence.} Because the dynamics is chaotic, individual trajectories computed with different time steps eventually diverge, and convergence must
 be checked on the statistics. \Cref{fig:statistical} compares the distribution $\mathcal D(\mu)$ for $h = 0.1/\omega_{\max}$ and $h=0.05/\omega_{\max}$ ($N=1024$, $\ell=6$,
