@@ -1,0 +1,78 @@
+\chapter{Conclusions}
+\label{ch:conclusions}
+
+This thesis set out to answer one question: can the statistics of the one-dimensional Burridge--Knopoff model of an earthquake fault be
+understood by mapping it onto a sandpile model, and can its exponents be obtained from the theory of self-organized criticality? This chapter
+collects the answers, in the order of the aims listed in Chapter~\ref{ch:intro}, and lists the questions that remain open.
+
+\section{Results}
+
+\paragraph{Self-organized criticality in one dimension.} The Bak--Tang--Wiesenfeld sandpile is Abelian, which gives exact results in any
+dimension: the mean number of topplings is the Green function of the toppling matrix, $\avg{s}\propto L^2$, and $D(2-\tau) = 2$. In one dimension
+the model can be solved completely; its avalanche sizes are given by the closed formula $s = g(j)+g(l')-g(l)$, and their distribution is a function of
+$s/L^2$ that is not a power law. The one-dimensional BTW model is therefore not critical, and whatever power laws the one-dimensional BK model produces
+cannot come from the mechanism of the simplest sandpile (Chapter~\ref{ch:soc}).
+
+\paragraph{The papers of Carlson and collaborators.} The 1989 and 1991 papers study different versions of the model: the 1989 version has a symmetric
+friction law and a finite loading speed $\nu$, which sets the size of the smallest events; the 1991 version has an asymmetric law with a friction drop
+$\sigma$ and $\nu\to0$. Their analytical estimates (the one-block event, slip pulses that grow exponentially at the sound speed, the localization length
+$\tilde\xi$ and the crossover moment $\tilde M$) are the same in both, with $\nu$ replaced by $\sigma$. The one-block event, which underlies all of them,
+is underestimated by a factor of about two for $\alpha=3$ when velocity weakening is neglected; we derived the corrected result,
+$\delta U_1 = \sigma(1+e^{\pi\alpha/\omega})/\omega_1^2$ (Chapter~\ref{ch:bk}).
+
+\paragraph{Implementation and validation.} The earlier implementation of this project contained several errors, among them a wrong Runge--Kutta stage, a coupling
+constant tied to the system size, fixed instead of free ends, and event durations that were never recorded. The new programs (Python, with the time-critical loops
+compiled by Numba) are validated by tests against exactly known results: the one-block event, a reference integrator, the energy balance, the sum rule, the Abelian
+property and the exact one-dimensional solution of the BTW model (Chapter~\ref{ch:numerics}). With these programs, a run of the BK chain that records millions of events
+takes minutes on a single processor core, so independent runs are executed in parallel rather than parallelising a single run.
+
+\paragraph{Reproduction.} Both papers are reproduced. For the 1991 model the shape of the distributions and the exponents agree with the published values
+($b = 0.91$--$0.96$ for $\alpha = 3$, against $0.92$; $b\approx0.36$--$0.40$ for $\alpha=1$, against $0.35$). The published curves lie, however, a factor of about five
+below the normalisation defined in the paper, as the sum rule shows. For the 1989 model all five panels of Fig.~6 of Carlson and Langer are reproduced, with
+$b = 0.89$--$0.94$ for $\alpha = 2.5$. Independent runs of the original length show that the shortest published runs could not determine $b$ better than about
+$\pm0.1$; together with the event definition (space--time clusters of slip), this explains why the earlier version of this project failed to reproduce the 1989 figures
+(Chapter~\ref{ch:results}).
+
+\paragraph{The mapping.} Removing inertia from the BK equations gives a continuous sandpile on the chain with a fixed drop of force and bulk dissipation
+$\epsilon = 1/(2\ell^2+1)$, or, with a different toppling rule, the one-dimensional Olami--Feder--Christensen model. The mapping is exact for the elementary process
+(the one-block event) and for the force bookkeeping and the sum rule. It fails for everything else: the deterministic sandpile limit is exactly periodic or synchronised,
+it is not chaotic, its avalanches are confined to a few stiffness lengths, and the friction parameters only set the unit of slip. Adding random thresholds removes the
+periodicity but not the confinement. None of the features of the BK size distribution beyond the smallest events survives (Chapter~\ref{ch:mapping}).
+
+\paragraph{Is the BK model critical?} Not in the strict sense of self-organized criticality. Its localized events follow a power law over a window bounded below by the
+microscopic events and above by a crossover at a moment of a few units of $a$, and the great events form a separate population with a peak and a sharp cutoff. The friction
+drop $\sigma$, which Carlson \emph{et al.} identify as the critical parameter, changes only the smallest events. The window of localized events and the range of great events
+both widen as the stiffness ratio $\ell$ grows, while the exponent drifts slowly, so the continuum limit $\ell\to\infty$ remains an open possibility for scale invariance
+(Chapter~\ref{ch:results}).
+
+\paragraph{Approximate theory.} Mean-field theory (the branching process) describes the sandpile limit as a subcritical process with branching ratio $1-\epsilon$; it
+predicts the mean avalanche size but not the distribution, which is instead described by a random walk with losses and collapses with the single scale $\ell$. The BK model
+differs by inertial amplification: a rigid group of $n$ blocks slips by an amount that grows rapidly with $n$ and runs away above $n^* = 2\ell^2/(\alpha^2-1)$, and the
+simulations show the same amplification. Great events require $\alpha>1$, the condition for a long group to run away. A sharper criterion, $n^*<\tilde\xi$, predicts their onset
+correctly for $\ell = 6$ but was refuted by new runs at $\ell = 12$, where the onset moves to smaller $\alpha$ instead of larger (Chapter~\ref{ch:theory}). The predicted crossover moment $\tilde M = 2\xi/\alpha$ is not confirmed, and the exponent of the localized events depends on $\alpha$,
+which rules out a universal mean-field exponent.
+
+\section{The answer}
+
+The one-dimensional Burridge--Knopoff model cannot be mapped onto a sandpile model. The obstacle is not a detail of the toppling rule or the absence of disorder, but the
+inertia of the blocks: with velocity-weakening friction, a slipping region gains momentum and passes on more force the larger it becomes, so that its effective branching ratio
+grows with its size, while in any sandpile built on static force transfer every toppling passes on the same fraction $1-\epsilon$ of a fixed drop. This amplification produces the
+great events, the chaotic dynamics and the dependence on $\alpha$; its absence makes the sandpile limit subcritical and confined to the scale $\ell$. The Gutenberg--Richter-like
+statistics of the BK model are therefore intrinsically dynamical, and they are not self-organized critical in the sense of the sandpile models.
+
+\section{Open questions}
+
+\begin{itemize}
+  \item \textbf{The crossover.} The crossover from localized to great events lies at a moment of a few units of $a$, nearly independent of $\alpha$, $\sigma$ and $\ell$ in the range
+    studied. A theory of its position, and a test whether it eventually scales with $\xi$ for $\ell\gg24$, are missing.
+  \item \textbf{The runaway size.} The onset of great events lies at $\alpha\approx1.3$ for $\ell=6$ and below $1.25$ for $\ell = 12$. An estimate of the size at which an
+    event runs away, based on the pulse solution rather than on a rigid group, should explain this dependence on $\ell$.
+  \item \textbf{The exponent of the localized events.} It depends on $\alpha$, with a maximum $\tau\approx2$ near $\alpha = 3$. In the picture of Carlson \emph{et al.} it is set by
+    the roughness that great events leave behind; a quantitative theory of that roughness would be needed to predict it.
+  \item \textbf{The continuum limit.} Whether the window of the localized power law becomes infinite and its exponent converges as $\ell\to\infty$ requires chains with $\ell\gtrsim100$,
+    which are within reach of the present programs with longer runs.
+  \item \textbf{A dynamical cellular automaton.} A sandpile-like model that carries a velocity, or a rule in which the force passed on grows with the size of the slipping region,
+    might reproduce the BK statistics at a fraction of the cost. The runaway of long slipping regions for $\alpha>1$, found in Chapter~\ref{ch:theory}, is the property such a model would have to reproduce.
+  \item \textbf{Two dimensions.} The OFC model was derived from a two-dimensional BK model. Whether inertia plays the same role there, and whether the two-dimensional sandpile limit
+    is closer to criticality, is the natural extension of this work.
+\end{itemize}

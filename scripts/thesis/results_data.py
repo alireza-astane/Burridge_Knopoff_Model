@@ -42,6 +42,13 @@ RUNS["ell_16"] = dict(law=LAW_1991, N=16384, l=16.0, alpha=3.0, sigma=0.01, nu=0
                       transient=200, measure=300, keep_above=10 * one_block_moment(16, 3, 0.01))
 RUNS["ell_24"] = dict(law=LAW_1991, N=32768, l=24.0, alpha=3.0, sigma=0.01, nu=0.0,
                       transient=200, measure=150, keep_above=10 * one_block_moment(24, 3, 0.01))
+# 4) alpha-scan (theory chapter): l = 6 and l = 12, sigma = 0.01
+for a in (1.0, 1.25, 1.35, 1.45, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0):
+    RUNS[f"alpha_{a}"] = dict(law=LAW_1991, N=4096, l=6.0, alpha=a, sigma=0.01, nu=0.0,
+                              transient=200, measure=500, keep_above=10 * one_block_moment(6, a, 0.01))
+for a in (1.25, 1.5, 1.75, 2.0):
+    RUNS[f"alpha_{a}_l12"] = dict(law=LAW_1991, N=8192, l=12.0, alpha=a, sigma=0.01, nu=0.0,
+                                  transient=200, measure=300, keep_above=10 * one_block_moment(12, a, 0.01))
 # 3) the 1989 model (symmetric friction, finite loading speed), parameters of Carlson & Langer Fig. 6.
 #    Their run lengths T are in loading periods 2/nu, i.e. a plate displacement of 2 T.
 FIG6 = {"a": dict(alpha=2.5, nu=0.01, N=100, T=1000), "b": dict(alpha=2.5, nu=0.001, N=100, T=320),

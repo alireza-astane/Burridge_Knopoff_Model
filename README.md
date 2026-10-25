@@ -12,7 +12,7 @@ epicentre at the sound speed and grow as they go.*
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)](pyproject.toml)
 [![Numba](https://img.shields.io/badge/accelerated%20with-Numba-00A3E0)](https://numba.pydata.org)
-[![Tests](https://img.shields.io/badge/tests-81%20passing-2ea44f)](tests)
+[![Tests](https://img.shields.io/badge/tests-85%20passing-2ea44f)](tests)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](LICENSE)
 
 </div>
@@ -45,6 +45,7 @@ be understood with sandpile physics.
 | **Why** | Velocity-weakening friction acts as *negative damping*: slip pulses gain energy and grow exponentially as they spread. This amplification — absent from any sandpile built on static force transfer — produces the great events, the chaos, and the dependence on the friction parameter α. |
 | **Is the BK model critical?** | Not in the strict SOC sense. Its power law lives in a window bounded by the microscopic events and by a crossover set by the stiffness length; the great events are a characteristic population with a sharp cutoff growing as M\*/M̃ ∝ ℓ^0.95. Lowering the friction drop σ by a factor 100 changes only the smallest events, so σ is not a critical parameter; the window widens only as ℓ → ∞. |
 | **Both classic papers reproduced** | The 1989 model (finite loading speed, symmetric friction) reproduces all five panels of Carlson & Langer's Fig. 6, with b = 0.89–0.94 for α = 2.5 and 0.29 for α = 1. Independent runs of their original length show that their shortest runs (α = 4) could not fix b better than 0.71–0.90. The 1991 distributions match in shape and exponents, but the published curves are normalised a factor ≈5 below their own sum rule. |
+| **Approximate theory** | The sandpile limit is a *subcritical branching process* (branching ratio 1−ε): mean field gets its mean avalanche size (≈2ℓ²) but not its shape, which a random walk with losses explains — areas scale as ℓ, sizes as ℓ², confirmed by data collapse. In the BK model a rigid group of n blocks slips more per block the longer it is and *runs away* above n\* = 2ℓ²/(α²−1); the simulated slip per block grows 23× from 1 to 8 blocks (sandpile: 4.5×). Great events need α > 1, but the sharper criterion n\* < ξ̃ fails at ℓ = 12, and the crossover moment stays at ≈4–7 block spacings instead of Carlson's 2ξ/α. The localized exponent varies with α (τ from 1.5 to 1.97), so it is not a universal mean-field exponent. |
 
 The analysis also yields some smaller results: an exact closed-form solution of the 1D BTW sandpile
 (s = g(j) + g(l′) − g(l)), a correction to the one-block event of Carlson *et al.* that includes velocity weakening
@@ -89,7 +90,7 @@ neighbour by ℓ²Δf/(2ℓ²+1), where Δf is the force shed in a BK one-block 
 git clone https://github.com/alireza-astane/Burridge_Knopoff_Model.git
 cd Burridge_Knopoff_Model
 pip install -e ".[test]"
-pytest                                    # 81 tests, ~1.5 min
+pytest                                    # 85 tests, ~1 min
 
 python scripts/thesis/soc_figures.py      # Chapter 2: BTW sandpile in 1D and 2D
 python scripts/thesis/stats_figures.py    # Chapter 3: measuring exponents
@@ -98,8 +99,9 @@ python scripts/thesis/mapping_data.py     # Chapter 5 simulations (~1-2 h on 12 
 python scripts/thesis/mapping_figures.py
 python scripts/thesis/validation_data.py  # Chapter 6 checks
 python scripts/thesis/validation_figures.py
-python scripts/thesis/results_data.py     # Chapter 7 simulations (~1 h on 12 cores)
+python scripts/thesis/results_data.py     # Chapter 7-8 simulations (~1.5 h on 12 cores)
 python scripts/thesis/results_figures.py
+python scripts/thesis/theory_figures.py    # Chapter 8 (uses the runs above)
 python scripts/media/animations.py        # the animations above (needs ffmpeg)
 
 cd thesis && latexmk -pdf -outdir=build main.tex
@@ -128,6 +130,7 @@ bksoc/            Python package (NumPy + Numba)
   stats.py          power-law fitting, blocking, finite-size scaling
   bk.py             Burridge–Knopoff chain (1989 and 1991 friction laws)
   mapped.py         sandpile limit of the BK chain
+  bktheory.py       approximate theory: rigid groups, runaway size, branching process
 tests/            pytest suite
 scripts/thesis/   one script per thesis figure set
 scripts/media/    animations
@@ -140,7 +143,7 @@ data/             simulation output (not tracked; regenerable)
 ## The thesis
 
 [`thesis/thesis_draft.pdf`](thesis/thesis_draft.pdf) develops the theory from scratch — power laws, critical phenomena,
-self-organized criticality, the exactly solvable sandpile, statistics of power laws, the BK model and the mapping — with
+self-organized criticality, the exactly solvable sandpile, statistics of power laws, the BK model, the mapping and an approximate theory — with
 every step of the derivations written out.
 
 | Chapter | Content |
@@ -152,6 +155,8 @@ every step of the derivations written out.
 | 5 | The mapping to a sandpile, and why it fails |
 | 6 | Numerical methods and validation |
 | 7 | Results: reproduction of 1989 and 1991, the role of σ and ℓ, is the model critical? |
+| 8 | Approximate theory: branching process, random walk with losses, inertial amplification, tests |
+| 9 | Conclusions and open questions |
 
 ## References
 

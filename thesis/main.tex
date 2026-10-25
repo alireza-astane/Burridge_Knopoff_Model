@@ -77,7 +77,22 @@
 \pagenumbering{roman}
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
-\emph{(To be written when the results are complete.)}
+The Burridge--Knopoff (BK) model, a chain of blocks and springs pulled over a surface with velocity-weakening friction, produces earthquake-like
+events whose sizes follow a Gutenberg--Richter-like power law. This thesis asks whether these statistics can be understood by mapping the
+one-dimensional BK model onto a sandpile model of self-organized criticality (SOC). After reviewing SOC, including an exact solution of the
+one-dimensional Bak--Tang--Wiesenfeld sandpile, and the analysis of the BK model by Carlson, Langer and collaborators, we implement both models
+with programs validated against exactly known results, and reproduce the main results of the 1989 and 1991 papers. The reproduction reveals that
+the published 1991 distributions are normalised a factor of about five below their own sum rule, and that the shortest 1989 runs could not fix the
+exponent $b$ better than about $\pm0.1$. Removing inertia from the BK equations gives a continuous sandpile with bulk dissipation
+$\epsilon = 1/(2\ell^2+1)$, or the Olami--Feder--Christensen model. This mapping is exact for the elementary one-block event, but the sandpile limit
+is periodic or synchronised, not chaotic, and confined to a few stiffness lengths, even with random thresholds; it reproduces none of the BK statistics
+beyond the smallest events. The BK model itself is not SOC in the strict sense: its power law is bounded by microscopic events and by a crossover at a
+moment of a few units of the block spacing, it coexists with a characteristic population of great events, and the friction drop $\sigma$, proposed as
+the critical parameter, affects only the smallest events. An approximate theory shows why. The sandpile limit is a subcritical branching process
+whose avalanches, as a random walk with losses predicts, scale with the single length $\ell$, while in the BK model inertia amplifies slip: a slipping
+group runs away when it is long enough, which is possible only for velocity weakening $\alpha>1$. Simulations confirm the amplification and the
+condition $\alpha>1$, but refute a sharper criterion for the onset of great events and the predicted crossover moment $2\xi/\alpha$. The statistics
+of the BK model are therefore intrinsically dynamical and cannot be obtained from a sandpile built on static force transfer.
 
 \tableofcontents
 
@@ -92,6 +107,8 @@
 \include{chapters/ch5_mapping}
 \include{chapters/ch6_numerics}
 \include{chapters/ch7_results}
+\include{chapters/ch8_theory}
+\include{chapters/ch9_conclusions}
 
 \printbibliography[heading=bibintoc]
 
